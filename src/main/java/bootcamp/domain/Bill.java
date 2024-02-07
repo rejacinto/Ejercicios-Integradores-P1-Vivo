@@ -4,24 +4,18 @@ import bootcamp.domain.booking.Booking;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class Bill {
+public class Bill extends GenericObject {
 
-    private Integer id;
+    private static final AtomicInteger ID_GENERATOR = new AtomicInteger(0);
     private Client client;
     private List<Booking> bookings;
 
     public Bill(Client client) {
+        this.id = ID_GENERATOR.incrementAndGet();
         this.client = client;
         this.bookings = new ArrayList<>();
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public Client getClient() {

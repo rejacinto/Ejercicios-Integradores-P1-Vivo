@@ -15,9 +15,9 @@ public class BillServiceImp implements IBillService {
 
     @Override
     public void addBill(Bill bill) {
-        if (bill.getClient().getId() == null || !clientRepository.findById(bill.getClient().getId()).isPresent()){
-            bill.getClient().setId(clientRepository.save(bill.getClient()));
+        if (!clientRepository.findById(bill.getClient().getId()).isPresent()){
+            clientRepository.save(bill.getClient());
         }
-        bill.setId(billRepository.save(bill));
+        billRepository.save(bill);
     }
 }

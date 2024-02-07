@@ -7,27 +7,20 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class Tracker {
+public class Tracker extends GenericObject {
 
-    private Integer id;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
+    private static final AtomicInteger ID_GENERATOR = new AtomicInteger(0);
     private List<Booking> bookings;
     private Client client;
 
     public Tracker(Client client) {
+        this.id = ID_GENERATOR.incrementAndGet();
         this.bookings = new ArrayList<>();
         this.client = client;
     }
 
     public Tracker(List<Booking> bookings, Client client) {
+        this.id = ID_GENERATOR.incrementAndGet();
         this.bookings = bookings;
         this.client = client;
     }

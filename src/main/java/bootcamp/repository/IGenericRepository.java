@@ -1,11 +1,13 @@
 package bootcamp.repository;
 
+import bootcamp.domain.GenericObject;
+
 import java.util.List;
 import java.util.Optional;
 
-public interface IGenericRepository <T> {
+public interface IGenericRepository <T extends GenericObject> {
 
-    Integer save(T genericObject);
+    void save(T genericObject);
 
     Optional<T> findById(Integer id);
 

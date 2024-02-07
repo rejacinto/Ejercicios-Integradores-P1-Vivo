@@ -2,14 +2,14 @@ package bootcamp.domain;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Client {
+public class Client extends GenericObject {
 
-
-    private Integer id;
+    private static final AtomicInteger ID_GENERATOR = new AtomicInteger(0);
     private String firstName;
     private String lastName;
 
     public Client(String firstName, String lastName) {
+        this.id = ID_GENERATOR.incrementAndGet();
         this.firstName = firstName;
         this.lastName = lastName;
     }
@@ -18,14 +18,6 @@ public class Client {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public String getFirstName() {

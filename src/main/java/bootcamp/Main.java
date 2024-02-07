@@ -21,6 +21,7 @@ public class Main {
     public static void main( String[] args )
     {
         Client client = new Client("Renzo", "Jacinto");
+        Client client23 = new Client("Renzo11", "Jacinto11");
         Tracker tracker1 = new Tracker(client);
         tracker1.addCompleteBooking(1500, 500, 2500, 300);
 
@@ -34,10 +35,10 @@ public class Main {
                 new FoodBooking(1000)
         ), client);
 
-        client.setId(clientRepository.save(client));
-        tracker1.setId(trackerRepository.save(tracker1));
-        tracker2.setId(trackerRepository.save(tracker2));
-        tracker3.setId(trackerRepository.save(tracker3));
+        clientRepository.save(client);
+        trackerRepository.save(tracker1);
+        trackerRepository.save(tracker2);
+        trackerRepository.save(tracker3);
 
         System.out.println(trackerRepository.findAll());
 

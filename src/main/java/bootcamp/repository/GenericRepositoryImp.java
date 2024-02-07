@@ -1,23 +1,21 @@
 package bootcamp.repository;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import bootcamp.domain.GenericObject;
 
-public class GenericRepositoryImp <T> implements IGenericRepository <T> {
+import java.util.*;
+
+public class GenericRepositoryImp <T extends GenericObject> implements IGenericRepository <T> {
 
     private final Map<Integer, T> mapOfObjects = new HashMap<>();
-    private Integer id = -1;
 
     @Override
-    public Integer save(T genericObject) {
-        id++;
-        mapOfObjects.put(id, genericObject);
-        return id;
+    public void save(T genericObject) {
+        mapOfObjects.put(genericObject.getId(), genericObject);
     }
 
     @Override
     public Optional<T> findById(Integer id) {
-        return Optional.of(mapOfObjects.get(id));
+        return mapOfObjects.get(id) == null ? Optional.empty() : Optional.of(mapOfObjects.get(id));
     }
 
     @Override
