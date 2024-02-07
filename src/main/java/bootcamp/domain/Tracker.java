@@ -1,5 +1,7 @@
 package bootcamp.domain;
 
+import bootcamp.domain.booking.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -7,7 +9,6 @@ import java.util.stream.Collectors;
 
 public class Tracker {
 
-    private static final AtomicInteger count = new AtomicInteger(0);
     private Integer id;
 
     public Integer getId() {

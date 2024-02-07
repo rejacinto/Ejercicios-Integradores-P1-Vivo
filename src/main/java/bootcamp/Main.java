@@ -1,58 +1,69 @@
 package bootcamp;
 
 import bootcamp.domain.*;
-import bootcamp.exceptions.TrackerNotFoundException;
+import bootcamp.domain.booking.FoodBooking;
+import bootcamp.domain.booking.HotelBooking;
 import bootcamp.repository.GenericRepositoryImp;
 import bootcamp.repository.IGenericRepository;
+import bootcamp.service.BillServiceImp;
+import bootcamp.service.IBillService;
+import bootcamp.service.ITrackerService;
+import bootcamp.service.TrackerServiceImp;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class Main {
 
     static IGenericRepository<Client> clientRepository = new GenericRepositoryImp<>();
     static IGenericRepository<Tracker> trackerRepository = new GenericRepositoryImp<>();
-    static final double twoTrackersDiscount = 0.05;
-    static final double completePackageDiscount = 0.1;
-    static final double twoBookingsDiscount = 0.05;
+    static IGenericRepository<Bill> billRepository = new GenericRepositoryImp<>();
 
     public static void main( String[] args )
     {
         Client client = new Client("Renzo", "Jacinto");
-        Tracker tracker = new Tracker(client);
-        tracker.addCompleteBooking(1500.0, 500.0, 2500.0, 300.0);
+        Tracker tracker1 = new Tracker(client);
+        tracker1.addCompleteBooking(1500, 500, 2500, 300);
 
-        trackerRepository.save(tracker, tracker.getId());
-        clientRepository.save(client, client.getId());
+        Tracker tracker2 = new Tracker(Arrays.asList(
+                new HotelBooking(2000),
+                new FoodBooking(300)
+        ), client);
 
-        try {
-            Tracker trackerFetched = trackerRepository.findById(tracker.getId()).orElseThrow(TrackerNotFoundException::new);
-            System.out.println(trackerFetched);
-        } catch (TrackerNotFoundException e) {
-            System.out.println(e.getMessage());
-        }
+        Tracker tracker3 = new Tracker(Arrays.asList(
+                new HotelBooking(2000),
+                new FoodBooking(1000)
+        ), client);
 
-    }
+        client.setId(clientRepository.save(client));
+        tracker1.setId(trackerRepository.save(tracker1));
+        tracker2.setId(trackerRepository.save(tracker2));
+        tracker3.setId(trackerRepository.save(tracker3));
 
-    public static void calculateDiscountsAndShowResults() {
-        for (Client client : clientRepository.findAll()){
-            int clientId = client.getId();
-            List<Tracker> trackersOfClient = trackerRepository.findAll().stream().filter(t -> t.getClient().getId() == clientId).collect(Collectors.toList());
-            double initialTotal = trackersOfClient.stream().map(Tracker::getTotal).reduce(0.0, Double::sum);
-            boolean hasTwoTrackersDiscount = false;
-            boolean hasCompletePackageDiscount = false;
-            boolean hasTwoBookingsDiscount = false;
-            for (Tracker trackerOfClient : trackersOfClient) {
-                if (trackerOfClient.hasCompleteTouristPackage()) {
-                    hasCompletePackageDiscount = true;
-                    break;
-                }
-            }
-            double total = hasCompletePackageDiscount ? initialTotal * completePackageDiscount : initialTotal;
-        }
+        System.out.println(trackerRepository.findAll());
 
+        ITrackerService trackerService = new TrackerServiceImp(clientRepository, trackerRepository);
+
+        trackerService.calculateDiscountsAndShowResults();
+
+        System.out.println("Cantidad de localizadores vendidos: " + trackerService.getAmountOfTrackersSold());
+        System.out.println("Cantidad total de reservas: " + trackerService.getAmountOfBookings());
+        System.out.println("Reservas categorizadas por tipo: " + trackerService.getBookingsByType());
+        System.out.println("Total de ventas: $" + trackerService.getTotalOfSales());
+        System.out.println("Promedio de todas las ventas: $" + trackerService.getAvgOfSales());
+
+        System.out.println(clientRepository.findAll());
+
+        clientRepository.update(new Client(client.getId(), "Rodolfo", "Gutierrez"), client.getId());
+        System.out.println("Cliente modificado: " + clientRepository.findById(client.getId()));
+        Client deletedClient = clientRepository.deleteById(client.getId());
+        System.out.println("Cliente eliminado: " + deletedClient);
+        System.out.println("Listado de clientes luego de eliminarlo: " + clientRepository.findAll());
+
+        IBillService billService = new BillServiceImp(billRepository, clientRepository);
+        Client client2 = new Client("Fulano", "Mengano");
+        Bill bill = new Bill(client2);
+        billService.addBill(bill);
+        System.out.println("Lista de facturas: " + billRepository.findAll());
     }
 
 }

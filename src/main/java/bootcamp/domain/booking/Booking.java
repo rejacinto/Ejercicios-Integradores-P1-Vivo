@@ -1,4 +1,4 @@
-package bootcamp.domain;
+package bootcamp.domain.booking;
 
 public abstract class Booking {
     private Double price;
@@ -17,5 +17,7 @@ public abstract class Booking {
                 "price=" + price +
                 '}';
     }
+
+    public abstract String getKey();
 
 }

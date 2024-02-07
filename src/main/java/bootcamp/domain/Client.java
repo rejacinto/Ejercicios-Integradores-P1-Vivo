@@ -4,20 +4,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Client {
 
-    private static final AtomicInteger count = new AtomicInteger(0);
+
     private Integer id;
     private String firstName;
+    private String lastName;
 
-    @Override
-    public String toString() {
-        return "Client{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                '}';
+    public Client(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
-    private String lastName;
+    public Client(Integer id, String firstName, String lastName) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
 
     public Integer getId() {
         return id;
@@ -25,12 +26,6 @@ public class Client {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Client(String firstName, String lastName) {
-        this.id = count.incrementAndGet();
-        this.firstName = firstName;
-        this.lastName = lastName;
     }
 
     public String getFirstName() {
@@ -47,5 +42,14 @@ public class Client {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    @Override
+    public String toString() {
+        return "Client{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                '}';
     }
 }
