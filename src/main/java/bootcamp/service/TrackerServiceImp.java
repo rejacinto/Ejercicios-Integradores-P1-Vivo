@@ -1,9 +1,8 @@
 package bootcamp.service;
 
+import bootcamp.Main;
 import bootcamp.domain.*;
-import bootcamp.domain.booking.Booking;
-import bootcamp.domain.booking.HotelBooking;
-import bootcamp.domain.booking.TicketsBooking;
+import bootcamp.domain.booking.*;
 import bootcamp.repository.IGenericRepository;
 
 import java.util.*;
@@ -29,7 +28,19 @@ public class TrackerServiceImp implements ITrackerService {
 
     @Override
     public int getAmountOfBookings() {
-        return trackerRepository.findAll().stream().map(t -> t.getBookings().size()).reduce(Integer::sum).orElse(0);
+        return trackerRepository.findAll().stream().map(t -> t.getBookings().stream().map(this::getAmountOfBookingsPerBooking).collect(Collectors.toList()).stream().reduce(0, Integer::sum)).reduce(0, Integer::sum);
+    }
+
+    private Integer getAmountOfBookingsPerBooking(Booking booking) {
+        int totalBookings = 0;
+        String key = booking.getKey();
+
+        if (key.contains(Main.foodBooking())) totalBookings += 1;
+        if (key.contains(Main.hotelBooking())) totalBookings += 1;
+        if (key.contains(Main.ticketsBooking())) totalBookings += 1;
+        if (key.contains(Main.transportBooking())) totalBookings += 1;
+
+        return totalBookings;
     }
 
     @Override
@@ -37,12 +48,19 @@ public class TrackerServiceImp implements ITrackerService {
         List<Booking> bookings = trackerRepository.findAll().stream().flatMap(a -> a.getBookings().stream()).collect(Collectors.toList());
         Map<String, List<Booking>> bookingsByType = new HashMap<>();
         for (Booking booking : bookings) {
-            String key = booking.getKey();
-            if (!bookingsByType.containsKey(key)) bookingsByType.put(key, Arrays.asList(booking));
-            else {
-                List<Booking> listOfBookings = new ArrayList<>(bookingsByType.get(key));
-                listOfBookings.add(booking);
-                bookingsByType.put(key, listOfBookings);
+            List<Booking> individualBookings = new ArrayList<>();
+            if (booking.getHotelPrice() > 0) individualBookings.add(new HotelBooking(booking.getHotelPrice()));
+            if (booking.getFoodPrice() > 0) individualBookings.add(new FoodBooking(booking.getFoodPrice()));
+            if (booking.getTicketsPrice() > 0) individualBookings.add(new TicketsBooking(booking.getTicketsPrice()));
+            if (booking.getTransportPrice() > 0) individualBookings.add(new TransportBooking(booking.getTransportPrice()));
+            for (Booking individualBooking : individualBookings) {
+                String key = individualBooking.getKey();
+                if (!bookingsByType.containsKey(key)) bookingsByType.put(key, Collections.singletonList(individualBooking));
+                else {
+                    List<Booking> listOfBookings = new ArrayList<>(bookingsByType.get(key));
+                    listOfBookings.add(individualBooking);
+                    bookingsByType.put(key, listOfBookings);
+                }
             }
         }
         return bookingsByType;
@@ -51,9 +69,8 @@ public class TrackerServiceImp implements ITrackerService {
     @Override
     public double getTotalOfSales() {
         return trackerRepository.findAll().stream()
-                .map(t -> t.getBookings().stream()
-                        .map(Booking::getPrice).reduce(Double::sum).orElse(0.0))
-                .reduce(Double::sum).orElse(0.0);
+                .map(Tracker::getTotal)
+                .reduce(0.0, Double::sum);
     }
 
     @Override
@@ -103,13 +120,13 @@ public class TrackerServiceImp implements ITrackerService {
 
         for (Tracker tracker : trackersOfClient){
             for (Booking booking : tracker.getBookings()){
-                if (booking.getClass() == HotelBooking.class) {
+                if (booking.getKey().contains(Main.hotelBooking())) {
                     amountHotelBookings++;
-                    totalDiscount += booking.getPrice() * twoBookingsDiscount;
+                    totalDiscount += booking.getHotelPrice() * twoBookingsDiscount;
                 }
-                if (booking.getClass() == TicketsBooking.class) {
+                if (booking.getKey().contains(Main.ticketsBooking())) {
                     amountTicketsBookings++;
-                    totalDiscount += booking.getPrice() * twoBookingsDiscount;
+                    totalDiscount += booking.getTicketsPrice() * twoBookingsDiscount;
                 }
             }
         }

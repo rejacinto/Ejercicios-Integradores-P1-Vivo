@@ -1,8 +1,7 @@
 package bootcamp;
 
 import bootcamp.domain.*;
-import bootcamp.domain.booking.FoodBooking;
-import bootcamp.domain.booking.HotelBooking;
+import bootcamp.domain.booking.*;
 import bootcamp.repository.GenericRepositoryImp;
 import bootcamp.repository.IGenericRepository;
 import bootcamp.service.BillServiceImp;
@@ -10,7 +9,7 @@ import bootcamp.service.IBillService;
 import bootcamp.service.ITrackerService;
 import bootcamp.service.TrackerServiceImp;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 public class Main {
 
@@ -21,18 +20,15 @@ public class Main {
     public static void main( String[] args )
     {
         Client client = new Client("Renzo", "Jacinto");
-        Client client23 = new Client("Renzo11", "Jacinto11");
         Tracker tracker1 = new Tracker(client);
         tracker1.addCompleteBooking(1500, 500, 2500, 300);
 
-        Tracker tracker2 = new Tracker(Arrays.asList(
-                new HotelBooking(2000),
-                new FoodBooking(300)
+        Tracker tracker2 = new Tracker(Collections.singletonList(
+                new FoodBooking(new HotelBooking(new BookingBase(), 2000), 300)
         ), client);
 
-        Tracker tracker3 = new Tracker(Arrays.asList(
-                new HotelBooking(2000),
-                new FoodBooking(1000)
+        Tracker tracker3 = new Tracker(Collections.singletonList(
+                new FoodBooking(new HotelBooking(new BookingBase(), 2000), 1000)
         ), client);
 
         clientRepository.save(client);
@@ -65,6 +61,22 @@ public class Main {
         Bill bill = new Bill(client2);
         billService.addBill(bill);
         System.out.println("Lista de facturas: " + billRepository.findAll());
+    }
+
+    public static String foodBooking() {
+        return " Comida ";
+    }
+
+    public static String hotelBooking() {
+        return " Reserva de hotel ";
+    }
+
+    public static String ticketsBooking() {
+        return " Boletos de avión ";
+    }
+
+    public static String transportBooking() {
+        return " Transporte ";
     }
 
 }

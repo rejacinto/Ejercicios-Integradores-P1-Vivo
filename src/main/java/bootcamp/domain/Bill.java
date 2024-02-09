@@ -1,6 +1,6 @@
 package bootcamp.domain;
 
-import bootcamp.domain.booking.Booking;
+import bootcamp.domain.booking.BookingBase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ public class Bill extends GenericObject {
 
     private static final AtomicInteger ID_GENERATOR = new AtomicInteger(0);
     private Client client;
-    private List<Booking> bookings;
+    private List<BookingBase> bookings;
 
     public Bill(Client client) {
         this.id = ID_GENERATOR.incrementAndGet();
@@ -26,11 +26,11 @@ public class Bill extends GenericObject {
         this.client = client;
     }
 
-    public List<Booking> getBookings() {
+    public List<BookingBase> getBookings() {
         return bookings;
     }
 
-    public void setBookings(List<Booking> bookings) {
+    public void setBookings(List<BookingBase> bookings) {
         this.bookings = bookings;
     }
 

@@ -1,23 +1,19 @@
 package bootcamp.domain.booking;
 
-public abstract class Booking {
-    private Double price;
+public interface Booking {
 
-    public Booking(Double price) {
-        this.price = price;
-    }
+    String getKey();
 
-    public Double getPrice() {
-        return price;
-    }
+    String getKeyWithPrice();
 
-    @Override
-    public String toString() {
-        return "Booking{" +
-                "price=" + price +
-                '}';
-    }
+    Double getPrice();
 
-    public abstract String getKey();
+    Double getFoodPrice();
+
+    Double getHotelPrice();
+
+    Double getTicketsPrice();
+
+    Double getTransportPrice();
 
 }

@@ -1,11 +1,11 @@
 package bootcamp.domain;
 
+import bootcamp.Main;
 import bootcamp.domain.booking.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public class Tracker extends GenericObject {
 
@@ -51,25 +51,19 @@ public class Tracker extends GenericObject {
     }
 
     public Double getTotal() {
-        double accumulator = 0.0;
-        for (Booking booking : bookings) {
-            accumulator += booking.getPrice();
-        }
-        return accumulator;
+        return bookings.stream().map(Booking::getPrice).reduce(0.0, Double::sum);
     }
 
     public void addCompleteBooking(double hotelPrice, double foodPrice, double ticketsPrice, double transportPrice) {
-        bookings.add(new HotelBooking(hotelPrice));
-        bookings.add(new FoodBooking(foodPrice));
-        bookings.add(new TicketsBooking(ticketsPrice));
-        bookings.add(new TransportBooking(transportPrice));
+        bookings.add(new FoodBooking(new HotelBooking(new TicketsBooking(new TransportBooking(new BookingBase(), transportPrice), ticketsPrice), hotelPrice), foodPrice));
     }
 
     public boolean hasCompleteTouristPackage(){
-        List<Booking> hotelBookings = bookings.stream().filter(b -> b.getClass() == HotelBooking.class).collect(Collectors.toList());
-        List<Booking> foodBookings = bookings.stream().filter(b -> b.getClass() == FoodBooking.class).collect(Collectors.toList());
-        List<Booking> ticketsBookings = bookings.stream().filter(b -> b.getClass() == TicketsBooking.class).collect(Collectors.toList());
-        List<Booking> transportBookings = bookings.stream().filter(b -> b.getClass() == TransportBooking.class).collect(Collectors.toList());
-        return !hotelBookings.isEmpty() && !foodBookings.isEmpty() && !ticketsBookings.isEmpty() && !transportBookings.isEmpty();
+        return bookings.stream().anyMatch(b ->
+                b.getKey().contains(Main.foodBooking())
+                && b.getKey().contains(Main.hotelBooking())
+                && b.getKey().contains(Main.ticketsBooking())
+                && b.getKey().contains(Main.transportBooking())
+        );
     }
 }
